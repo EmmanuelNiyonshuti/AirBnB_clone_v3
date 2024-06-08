@@ -129,3 +129,9 @@ class TestFileStorage(unittest.TestCase):
         when the obj is not present"""
         obj = storage.get(User, "1234")
         self.assertEqual(obj, None)
+
+    def test_count_objs(self):
+        """Test count method"""
+        self.assertEqual(storage.count(), len(storage.all().values()))
+        all_objs = len(storage.all(State).values())
+        self.assertEqual(storage.count(State), all_objs)

@@ -103,5 +103,3 @@ class TestFileStorage(unittest.TestCase):
         when the obj is not present"""
         obj = storage.get(User, "1234")
         self.assertEqual(obj, None)
-
-
