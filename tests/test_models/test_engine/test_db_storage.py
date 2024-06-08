@@ -104,8 +104,11 @@ class TestFileStorage(unittest.TestCase):
         obj = storage.get(User, "1234")
         self.assertEqual(obj, None)
 
-    def test_count_objs(self):
-        """Test count method"""
+    def test_count_allobjs(self):
+        """Test count method  when no cls passed"""
         self.assertEqual(storage.count(), len(storage.all().values()))
-        all_objs = len(storage.all(State).values())
-        self.assertEqual(storage.count(State), all_objs)
+
+    def test_count_obj(self):
+        """Test count when cls is passed"""
+        objs = len(storage.all(State).values())
+        self.assertEqual(storage.count(State), objs)
