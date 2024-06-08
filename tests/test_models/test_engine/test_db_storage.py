@@ -6,6 +6,7 @@ Contains the TestDBStorageDocs and TestDBStorage classes
 from datetime import datetime
 import inspect
 import models
+from models import storage
 from models.engine import db_storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -18,6 +19,8 @@ import json
 import os
 import pep8
 import unittest
+
+
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
@@ -86,3 +89,17 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+    def test_get_obj_found(self):
+        """test getting the obj by it's class and id
+        when the obj is present"""
+        first_state_id = list(storage.all(User).values())[0].id
+        obj = storage.get(User, first_state_id)
+        self.assertIsNotNone(obj)
+        self.assertEqual(obj.id, first_state_id)
+
+    def test_get_obj_notfound(self):
+        """test getting the obj by it's class and id
+        when the obj is not present"""
+        obj = storage.get(User, "1234")
+        self.assertEqual(obj, None)
