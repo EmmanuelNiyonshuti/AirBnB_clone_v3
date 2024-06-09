@@ -52,12 +52,10 @@ def states(state_id=None):
         elif request.method == "POST":
             try:
                 data = request.get_json()
-                if not data:
-                    abort(400, description="Not a JSON")
             except BadRequest:
-                abort(400, description="Not a JSON")
+                return jsonify(description="Not a JSON"), 400
             if "name" not in data.keys():
-                abort(400, description="Missing Name")
+                return jsonify(description="Missing Name"), 400
             new_state = State(**data)
             storage.new(new_state)
             storage.save()
@@ -66,7 +64,7 @@ def states(state_id=None):
         state = storage.get(State, state_id)
         if state is None:
             abort(404)
-        elif request.method == "GET":
+        if request.method == "GET":
             return jsonify(state.to_dict())
 
         elif request.method == "DELETE":
@@ -77,12 +75,12 @@ def states(state_id=None):
         elif request.method == "PUT":
             try:
                 data = request.get_json()
-                if not data:
-                    abort(400, description="Not a JSON")
             except BadRequest:
-                abort(400, description="Not a JSON")
+                return jsonify(description="Not a JSON"), 400
+
+            data = request.get_json()
             for k, v in data.items():
-                if k not in ["id", "created_at", "updated_at"]:
+                if k not in storage.all(State).values():
                     setattr(state, k, v)
             storage.save()
             return jsonify(state.to_dict()), 200
