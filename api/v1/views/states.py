@@ -61,9 +61,12 @@ def states(state_id=None):
             storage.save()
             return jsonify(new_state.to_dict()), 201
     else:
-        state = storage.get(State, state_id)
-        if state is None:
-            abort(404)
+        try:
+            state = storage.get(State, state_id)
+            if state is None:
+                abort(404)
+        except:
+            return (404)
         if request.method == "GET":
             return jsonify(state.to_dict())
 
