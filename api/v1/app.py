@@ -6,7 +6,8 @@ It sets up the Flask app instance, registers the blueprint for routing,
 and defines a teardown function to close the storage session
 after each request.
 """
-from flask import Flask
+from flask import Flask, jsonify
+from werkzeug.exceptions import NotFound
 from models import storage
 from api.v1.views import app_views
 import os
@@ -27,6 +28,14 @@ def teardown(exception):
     It ensures the storage session is closed after each request.
     """
     storage.close()
+
+
+@app.errorhandler(NotFound)
+def not_found_error(error):
+    """
+    Not found error
+    """
+    return jsonify({"error": "Not found"}), 404
 
 
 """Run the Flask web server"""
