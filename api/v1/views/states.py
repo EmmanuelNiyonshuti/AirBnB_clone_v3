@@ -9,8 +9,8 @@ from flask import jsonify, abort, request
 from werkzeug.exceptions import BadRequest
 
 
-@app_views.route("/states", methods=["GET", "POST"])
-@app_views.route("/states/<state_id>", methods=["GET", "PUT", "DELETE"])
+@app_views.route("/states", methods=["GET", "POST"], strict_slashes=False)
+@app_views.route("/states/<state_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def states(state_id=None):
     """
     Retrieves a list of all State objects or handles
