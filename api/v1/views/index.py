@@ -33,9 +33,10 @@ def stats():
     from models.state import State
     from models.user import User
     from models.amenity import Amenity
+    from models.base_model import BaseModel
 
     obj_dict = {}
-    objs = {"amenities": Amenity, "cities": City,
+    objs = {"basemodel": BaseModel, "amenities": Amenity, "cities": City,
             "places": Place, "reviews": Review, "states": State, "users": User}
     for k, v in objs.items():
         obj_dict[k] = storage.count(v)
