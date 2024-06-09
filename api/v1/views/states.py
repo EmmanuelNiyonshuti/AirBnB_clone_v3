@@ -52,14 +52,14 @@ def states(state_id=None):
         elif request.method == "POST":
             try:
                 data = request.get_json()
-                if "name" not in data.keys():
-                    return jsonify(description="Missing Name"), 400
-                new_state = State(**data)
-                storage.new(new_state)
-                storage.save()
-                return jsonify(new_state.to_dict()), 201
             except BadRequest:
                 return jsonify(description="Not a JSON"), 400
+            if "name" not in data.keys():
+                return jsonify(description="Missing Name"), 400
+            new_state = State(**data)
+            storage.new(new_state)
+            storage.save()
+            return jsonify(new_state.to_dict()), 201
     else:
         try:
             state = storage.get(State, state_id)
