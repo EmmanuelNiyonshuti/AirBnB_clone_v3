@@ -10,8 +10,7 @@ from werkzeug.exceptions import BadRequest
 
 
 @app_views.route("/states", methods=["GET", "POST"], strict_slashes=False)
-@app_views.route("/states/<state_id>",
-                methods=["GET", "PUT", "DELETE"], strict_slashes=False)
+@app_views.route("/states/<state_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def states(state_id=None):
     """
     Retrieves a list of all State objects or handles
@@ -62,7 +61,7 @@ def states(state_id=None):
             new_state = State(**data)
             storage.new(new_state)
             storage.save()
-            return jsonify(new_state.to_dict())
+            return jsonify(new_state.to_dict()), 201
     else:
         state = storage.get(State, state_id)
         if state is None:
