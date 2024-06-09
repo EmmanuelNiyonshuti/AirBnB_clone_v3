@@ -27,12 +27,16 @@ def stats():
     """
     Retrieves The number of each object by type.
     """
+    from models.city import City
+    from models.place import Place
+    from models.review import Review
+    from models.state import State
+    from models.user import User
+    from models.amenity import Amenity
+
     obj_dict = {}
-    for obj in storage.all().values():
-        class_name = obj.__class__.__name__
-        if class_name.endswith('y'):
-            key = class_name[:-1].lower() + 'ies'
-        else:
-            key = class_name.lower() + 's'
-        obj_dict[key] = storage.count(class_name)
+    objs = {"amenities": Amenity, "cities": City,
+            "places": Place, "reviews": Review, "states": State, "users": User}
+    for k, v in objs.items():
+        obj_dict[k] = storage.count(v)
     return jsonify(obj_dict)
