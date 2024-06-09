@@ -27,9 +27,18 @@ def stats():
     """
     Retrieves The number of each object by type.
     """
-    from models.engine.db_storage import classes
+    from models.amenity import Amenity
+    from models.base_model import BaseModel
+    from models.city import City
+    from models.place import Place
+    from models.review import Review
+    from models.state import State
+    from models.user import User
+
+    objs = {"amenities": Amenity, "basemodel": BaseModel, "cities": City,
+            "places": Place, "reviews": Review, "states": State, "users": User}
 
     obj_dict = {}
-    for k, v in classes.items():
+    for k, v in objs.items():
         obj_dict[k] = storage.count(v)
     return jsonify(obj_dict)
