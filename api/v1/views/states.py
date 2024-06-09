@@ -66,7 +66,7 @@ def states(state_id=None):
             if state is None:
                 abort(404)
         except:
-            return (404)
+            abort(404)
         if request.method == "GET":
             return jsonify(state.to_dict())
 
