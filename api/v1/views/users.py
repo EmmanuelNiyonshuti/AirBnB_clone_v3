@@ -60,7 +60,7 @@ def user_objs(user_id):
         PUT: Updates a specific a user by ID.
         DELETE: Deletes a specific user by ID.
 
-    Args:
+    Arg:
         user_id (str): The ID of the user to be managed.
 
     Returns:
