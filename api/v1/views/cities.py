@@ -49,7 +49,7 @@ def state_cities(state_id=None):
             storage.save()
             return jsonify(new_city.to_dict()), 201
 
-
+@app_views.route("/cities", methods=["GET"], strict_slashes=False)
 @app_views.route("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def cities(city_id=None):
     """
@@ -83,10 +83,11 @@ def cities(city_id=None):
         elif request.method == "PUT":
             try:
                 req_data = request.get_json()
+                for name, value in req_data.items():
+                    if name not in ["id", "state_id", "created_at", "updated_at"]:
+                        setattr(city, name, value)
+                storage.save()
+                return jsonify(city.to_dict()), 200
             except BadRequest:
                 return jsonify(description="Not a JSON"), 400
-            for name, value in req_data.items():
-                if name not in ["id", "state_id", "created_at", "updated_at"]:
-                    setattr(city, name, value)
-            storage.save()
-            return jsonify(city.to_dict()), 200
+
