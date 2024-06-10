@@ -43,7 +43,7 @@ def state_cities(state_id=None):
             except BadRequest:
                 return jsonify(description="Not a JSON"), 400
             if "name" not in req_data.keys():
-                return jsonify(description="Missing a name"), 400
+                return jsonify(description="Missing Name"), 400
             new_city = City(**req_data)
             new_city.state_id = state_id
             storage.new(new_city)
@@ -70,10 +70,9 @@ def cities(city_id=None):
     Returns:
         Response: JSON response with cities data or success/error message.
     """
-    city_objs = storage.all(City).values()
-    cities = [city.to_dict() for city in city_objs]
-
     if not city_id:
+        city_objs = storage.all(City).values()
+        cities = [city.to_dict() for city in city_objs]
         return jsonify(cities)
     else:
         city = storage.get(City, city_id)
@@ -84,7 +83,7 @@ def cities(city_id=None):
         elif request.method == "DELETE":
             storage.delete(city)
             storage.save()
-            return ({}), 200
+            return jsonify({}), 200
         elif request.method == "PUT":
             try:
                 req_data = request.get_json()
