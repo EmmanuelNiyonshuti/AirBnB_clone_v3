@@ -39,15 +39,15 @@ def state_cities(state_id=None):
         elif request.method == "POST":
             try:
                 req_data = request.get_json()
-            except BadRequest:
-                return jsonify(description="Not a JSON"), 400
-            if "name" not in req_data.keys():
-                return jsonify(description="Missing Name"), 400
-            new_city = City(**req_data)
-            new_city.state_id = state_id
-            storage.new(new_city)
-            storage.save()
-            return jsonify(new_city.to_dict()), 201
+                if "name" not in req_data.keys():
+                    abort(400, description="Missing Name")
+                new_city = City(**req_data)
+                new_city.state_id = state_id
+                storage.new(new_city)
+                storage.save()
+                return jsonify(new_city.to_dict()), 201
+            except:
+                abort(400, description="Not a JSON")
 
 @app_views.route("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def cities(city_id=None):
