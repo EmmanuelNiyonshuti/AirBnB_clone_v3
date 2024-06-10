@@ -6,6 +6,7 @@ It sets up the Flask app instance, registers the blueprint for routing,
 and defines a teardown function to close the storage session
 after each request.
 """
+from flask_cors import CORS
 from flask import Flask, jsonify
 from werkzeug.exceptions import NotFound
 from models import storage
@@ -14,6 +15,7 @@ import os
 
 """Create an instance of the Flask class for the web application"""
 app = Flask(__name__)
+CORS(app, origins="0.0.0.0")
 """
 Register the blueprint with the Flask app instance
 This blueprint contains the route definitions for the API endpoints
