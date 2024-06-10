@@ -49,6 +49,7 @@ def state_cities(state_id=None):
             storage.save()
             return jsonify(new_city.to_dict()), 201
 
+
 @app_views.get("/cities/<city_id>", strict_slashes=False)
 @app_views.put("/cities/<city_id>", strict_slashes=False)
 @app_views.delete("/cities/<city_id>", strict_slashes=False)
@@ -67,11 +68,7 @@ def cities(city_id=None):
     Returns:
         Response: JSON response with cities data or success/error message.
     """
-    if not city_id:
-        city_objs = storage.all(City).values()
-        cities = [city.to_dict() for city in city_objs]
-        return jsonify(cities)
-    else:
+    if city_id:
         city = storage.get(City, city_id)
         if city is None:
             abort(404)
@@ -90,4 +87,3 @@ def cities(city_id=None):
                     setattr(city, name, value)
             storage.save()
             return jsonify(city.to_dict()), 200
-
