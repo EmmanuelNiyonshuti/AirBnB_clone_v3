@@ -23,18 +23,23 @@ def amenities():
     Returns:
         Response: JSON response with amenities data or success/error message.
     """
-    amenities = storage.all(Amenity).values()
     if request.method == "GET":
-        amenities_list = []
-        for amenity in amenities:
-            amenities_list.append(amenity.to_dict())
+        amenities = storage.all(Amenity).values()
+        amenities_list = [amenity.to_dict() for amenity in amenities]
         return jsonify(amenities_list)
+
     elif request.method == "POST":
-        req_data = request.get_json()
+        try:
+            req_data = request.get_json()
+        except BadRequest:
+            abort(400, description="Not a JSON")
+
         if not req_data:
-            abort(400, "Not a JSON")
-        if "name" not in req_data.keys():
-            abort(400, "Missing name")
+            abort(400, description="Not a JSON")
+
+        if "name" not in req_data:
+            abort(400, description="Missing name")
+
         new_amenity = Amenity(**req_data)
         storage.new(new_amenity)
         storage.save()
