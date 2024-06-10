@@ -78,7 +78,7 @@ def cities(city_id):
     elif request.method == "DELETE":
         storage.delete(city)
         storage.save()
-        return ({}), 200
+        return jsonify({}), 200
     elif request.method == "PUT":
         req_data = request.get_json()
         if not req_data:
