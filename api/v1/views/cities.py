@@ -50,7 +50,7 @@ def state_cities(state_id=None):
             return jsonify(new_city.to_dict()), 201
 
 
-@app_views.get("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
+@app_views.route("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def cities(city_id=None):
     """
     Endpoint to manage individual city objects.
