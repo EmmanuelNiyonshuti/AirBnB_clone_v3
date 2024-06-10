@@ -29,10 +29,7 @@ def amenities():
         amenities_list = [amenity.to_dict() for amenity in amenities]
         return jsonify(amenities_list)
     elif request.method == "POST":
-        try:
-            req_data = request.get_json()
-        except BadRequest:
-            abort(400, description="Not a JSON")
+        req_data = request.get_json()
         if not req_data:
             abort(400, description="Not a JSON")
         if "name" not in req_data.keys():
@@ -71,10 +68,7 @@ def amenity_obj(amenity_id):
         storage.save()
         return ({}), 200
     elif request.method == "PUT":
-        try:
-            req_data = request.get_json()
-        except BadRequest:
-            abort(400, description="Not a JSON")   
+        req_data = request.get_json()   
         if not req_data:
             abort(400, description="Not a JSON")
         for k, v in req_data.items():
