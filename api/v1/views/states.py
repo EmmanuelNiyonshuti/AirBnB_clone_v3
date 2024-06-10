@@ -57,14 +57,14 @@ def states(state_id=None):
                 data = request.get_json()
                 if not data:
                     abort(400, description="Not a JSON")
+                if "name" not in data.keys():
+                    abort(400, description="Missing name")
+                new_state = State(**data)
+                storage.new(new_state)
+                storage.save()
+                return jsonify(new_state.to_dict()), 201
             except BadRequest:
                 abort(400, description="Not a JSON")
-            if "name" not in data.keys():
-                abort(400, description="Missing name")
-            new_state = State(**data)
-            storage.new(new_state)
-            storage.save()
-            return jsonify(new_state.to_dict()), 201
 
     else:
         state = storage.get(State, state_id)
@@ -83,10 +83,10 @@ def states(state_id=None):
                 data = request.get_json()
                 if not data:
                     abort(400, description="Not a JSON")
+                for k, v in data.items():
+                    if k not in ["id", "created_at", "updated_at"]:
+                        setattr(state, k, v)
+                storage.save()
+                return jsonify(state.to_dict()), 200
             except BadRequest:
                 abort(400, description="Not a JSON")
-            for k, v in data.items():
-                if k not in ["id", "created_at", "updated_at"]:
-                    setattr(state, k, v)
-            storage.save()
-            return jsonify(state.to_dict()), 200
