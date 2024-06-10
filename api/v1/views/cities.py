@@ -30,13 +30,15 @@ def state_cities(state_id):
         Response: JSON response with cities data or success/error message.
     """
     state = storage.get(State, state_id)
-    if state is None:
-        abort(404)
     if request.method == "GET":
+        if state is None:
+            abort(404)
         cities = storage.all(City).values()
         st_ctz = [c.to_dict() for c in cities if c.state_id == state_id]
         return jsonify(st_ctz)
     elif request.method == "POST":
+        if state is None:
+            abort(404)
         req_data = request.get_json()
         if not req_data:
             abort(400, description="Not a JSON")
@@ -71,15 +73,19 @@ def cities(city_id):
         Response: JSON response with cities data or success/error message.
     """
     city = storage.get(City, city_id)
-    if city is None:
-        abort(404)
     if request.method == "GET":
+        if city is None:
+            abort(404)
         return jsonify(city.to_dict())
     elif request.method == "DELETE":
+        if city is None:
+            abort(404)
         storage.delete(city)
         storage.save()
-        return jsonify({}), 200
+        return ({}), 200
     elif request.method == "PUT":
+        if city is None:
+            abort(404)
         req_data = request.get_json()
         if not req_data:
             abort(400, description="Not a JSON")

@@ -9,8 +9,11 @@ from flask import jsonify, abort, request
 from werkzeug.exceptions import BadRequest
 
 
-@app_views.route("/states", methods=["GET", "POST"], strict_slashes=False)
-@app_views.route("/states/<state_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
+@app_views.get("/states", strict_slashes=False)
+@app_views.post("/states", strict_slashes=False)
+@app_views.get("/states/<state_id>", strict_slashes=False)
+@app_views.put("/states/<state_id>", strict_slashes=False)
+@app_views.delete("/states/<state_id>", strict_slashes=False)
 def states(state_id=None):
     """
     Retrieves a list of all State objects or handles
@@ -61,29 +64,26 @@ def states(state_id=None):
             storage.save()
             return jsonify(new_state.to_dict()), 201
     else:
-        try:
-            state = storage.get(State, state_id)
+        state = storage.get(State, state_id)
+        if request.method == "GET":
             if state is None:
                 abort(404)
-            if request.method == "GET":
-                return jsonify(state.to_dict())
+            return jsonify(state.to_dict())
 
-            elif request.method == "DELETE":
-                storage.delete(state)
-                storage.save()
-                return jsonify({}), 200
+        elif request.method == "DELETE":
+            if state is None:
+                abort(404)
+            storage.delete(state)
+            storage.save()
+            return ({}), 200
 
-            elif request.method == "PUT":
-                try:
-                    data = request.get_json()
-                except BadRequest:
-                    return jsonify(description="Not a JSON"), 400
-
-                data = request.get_json()
-                for k, v in data.items():
-                    if k not in storage.all(State).values():
-                        setattr(state, k, v)
-                storage.save()
-                return jsonify(state.to_dict()), 200
-        except:
-            abort(404)
+        elif request.method == "PUT":
+            data = request.get_json()
+            if not data:
+                abort(400, description="Not a JSON")
+            data = request.get_json()
+            for k, v in data.items():
+                if k not in storage.all(State).values():
+                    setattr(state, k, v)
+            storage.save()
+            return jsonify(state.to_dict()), 200
