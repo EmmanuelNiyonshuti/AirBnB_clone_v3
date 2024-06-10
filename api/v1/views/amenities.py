@@ -27,19 +27,12 @@ def amenities():
         amenities = storage.all(Amenity).values()
         amenities_list = [amenity.to_dict() for amenity in amenities]
         return jsonify(amenities_list)
-
     elif request.method == "POST":
-        try:
-            req_data = request.get_json()
-        except BadRequest:
-            abort(400, description="Not a JSON")
-
+        req_data = request.get_json()
         if not req_data:
             abort(400, description="Not a JSON")
-
-        if "name" not in req_data:
+        if "name" not in req_data.keys():
             abort(400, description="Missing name")
-
         new_amenity = Amenity(**req_data)
         storage.new(new_amenity)
         storage.save()
@@ -65,19 +58,15 @@ def amenity_obj(amenity_id):
         Response: JSON response with amenity data or success/error message.
     """
     amenity = storage.get(Amenity, amenity_id)
+    if amenity is None:
+        abort(404)
     if request.method == "GET":
-        if amenity is None:
-            abort(404)
         return jsonify(amenity.to_dict())
     elif request.method == "DELETE":
-        if amenity is None:
-            abort(404)
         storage.delete(amenity)
         storage.save()
         return ({}), 200
     elif request.method == "PUT":
-        if amenity is None:
-            abort(404)
         req_data = request.get_json()
         if not req_data:
             abort(400, "Not a JSON")
