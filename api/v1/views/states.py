@@ -2,6 +2,7 @@
 """
 This module defines the routes for managing State objects in the REST API.
 """
+
 from api.v1.views import app_views
 from models import storage
 from models.state import State
@@ -46,7 +47,6 @@ def states(state_id=None):
     Returns:
         json: JSON response containing State object(s) or status message.
     """
-
     if state_id is None:
         if request.method == "GET":
             states = storage.all(State).values()
@@ -55,38 +55,38 @@ def states(state_id=None):
         elif request.method == "POST":
             try:
                 data = request.get_json()
+                if not data:
+                    abort(400, description="Not a JSON")
             except BadRequest:
-                return jsonify(description="Not a JSON"), 400
+                abort(400, description="Not a JSON")
             if "name" not in data.keys():
-                return jsonify(description="Missing name"), 400
+                abort(400, description="Missing name")
             new_state = State(**data)
             storage.new(new_state)
             storage.save()
             return jsonify(new_state.to_dict()), 201
+
     else:
-        try:
-            state = storage.get(State, state_id)
-            if state is None:
-                abort(404)
-            if request.method == "GET":
-                return jsonify(state.to_dict())
-
-            elif request.method == "DELETE":
-                storage.delete(state)
-                storage.save()
-                return ({}), 200
-
-            elif request.method == "PUT":
-                try:
-                    data = request.get_json()
-                except BadRequest:
-                    return jsonify(description="Not a JSON"), 400
-
-                data = request.get_json()
-                for k, v in data.items():
-                    if k not in storage.all(State).values():
-                        setattr(state, k, v)
-                storage.save()
-                return jsonify(state.to_dict()), 200
-        except:
+        state = storage.get(State, state_id)
+        if state is None:
             abort(404)
+        elif request.method == "GET":
+            return jsonify(state.to_dict())
+
+        elif request.method == "DELETE":
+            storage.delete(state)
+            storage.save()
+            return ({}), 200
+
+        elif request.method == "PUT":
+            try:
+                data = request.get_json()
+                if not data:
+                    abort(400, description="Not a JSON")
+            except BadRequest:
+                abort(400, description="Not a JSON")
+            for k, v in data.items():
+                if k not in ["id", "created_at", "updated_at"]:
+                    setattr(state, k, v)
+            storage.save()
+            return jsonify(state.to_dict()), 200
