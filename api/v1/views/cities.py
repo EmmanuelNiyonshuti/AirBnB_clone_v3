@@ -13,8 +13,7 @@ from flask import jsonify, abort, request
 from werkzeug.exceptions import BadRequest
 
 
-@app_views.get("/states/<state_id>/cities", strict_slashes=False)
-@app_views.post("/states/<state_id>/cities", strict_slashes=False)
+@app_views.route("/states/<state_id>/cities", methods=["GET", "POST"], strict_slashes=False)
 def state_cities(state_id=None):
     """
     Endpoint to manage cities related to a specific state.
@@ -51,10 +50,7 @@ def state_cities(state_id=None):
             return jsonify(new_city.to_dict()), 201
 
 
-@app_views.get("/cities", strict_slashes=False)
-@app_views.get("/cities/<city_id>", strict_slashes=False)
-@app_views.put("/cities/<city_id>", strict_slashes=False)
-@app_views.delete("/cities/<city_id>", strict_slashes=False)
+@app_views.get("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
 def cities(city_id=None):
     """
     Endpoint to manage individual city objects.
