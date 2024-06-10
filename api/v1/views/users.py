@@ -7,6 +7,7 @@ from api.v1.views import app_views
 from flask import request, abort, jsonify
 from models import storage
 from models.user import User
+from werkzeug.exceptions import BadRequest
 
 
 @app_views.get("/users", strict_slashes=False)
@@ -23,8 +24,8 @@ def users():
     Returns:
         Response: JSON response with users data or success/error message.
     """
-    all_users = storage.all(User).values()
     if request.method == "GET":
+        all_users = storage.all(User).values()
         list_users = []
         for user in all_users:
             list_users.append(user.to_dict())
@@ -37,10 +38,10 @@ def users():
         if not req_data:
             abort(400, description="Not a JSON")
 
-        if 'email' not in req_data:
-            abort(400, description="Missing email")
-        if 'password' not in req_data:
-            abort(400, description="Missing password")
+        required_fields = ["email", "password"]
+        for field in required_fields:
+            if field not in req_data:
+                abort(400, description=f"Missing {field}")
         new_user = User(**req_data)
         storage.new(new_user)
         storage.save()
