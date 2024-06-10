@@ -31,13 +31,15 @@ def state_cities(state_id=None):
     """
     if state_id:
         state = storage.get(State, state_id)
-        if state is None:
-            abort(404)
         if request.method == "GET":
+            if state is None:
+                abort(404)
             cities = storage.all(City).values()
             st_ctz = [c.to_dict() for c in cities if c.state_id == state_id]
             return jsonify(st_ctz)
         elif request.method == "POST":
+            if state is None:
+                abort(404)
             req_data = request.get_json()
             if not req_data:
                 abort(400, description="Not a JSON")
@@ -48,8 +50,7 @@ def state_cities(state_id=None):
             storage.new(new_city)
             storage.save()
             return jsonify(new_city.to_dict()), 201
-    else:
-        abort(400)
+
 
 @app_views.get("/cities/<city_id>", strict_slashes=False)
 @app_views.put("/cities/<city_id>", strict_slashes=False)
@@ -71,15 +72,19 @@ def cities(city_id=None):
     """
     if city_id:
         city = storage.get(City, city_id)
-        if city is None:
-            abort(404)
         if request.method == "GET":
+            if city is None:
+                abort(404)
             return jsonify(city.to_dict())
         elif request.method == "DELETE":
+            if city is None:
+                abort(404)
             storage.delete(city)
             storage.save()
-            return jsonify({}), 200
+            return ({}), 200
         elif request.method == "PUT":
+            if city is None:
+                abort(404)
             req_data = request.get_json()
             if not req_data:
                 abort(400, description="Not a JSON")
@@ -88,5 +93,3 @@ def cities(city_id=None):
                     setattr(city, name, value)
             storage.save()
             return jsonify(city.to_dict()), 200
-    else:
-        abort(400)
