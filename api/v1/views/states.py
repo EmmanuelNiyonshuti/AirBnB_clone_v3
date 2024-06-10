@@ -50,40 +50,33 @@ def states(state_id=None):
             state_list = [state.to_dict() for state in states]
             return jsonify(state_list)
         elif request.method == "POST":
-            try:
-                data = request.get_json()
-            except BadRequest:
-                return jsonify(description="Not a JSON"), 400
+            data = request.get_json()
+            if not data:
+                abort(400, description="Not a JSON")
             if "name" not in data.keys():
-                return jsonify(description="Missing Name"), 400
+                abort(400, description="Missing name")
             new_state = State(**data)
             storage.new(new_state)
             storage.save()
             return jsonify(new_state.to_dict()), 201
     else:
-        try:
-            state = storage.get(State, state_id)
-            if state is None:
-                abort(404)
-            if request.method == "GET":
-                return jsonify(state.to_dict())
-
-            elif request.method == "DELETE":
-                storage.delete(state)
-                storage.save()
-                return ({}), 200
-
-            elif request.method == "PUT":
-                try:
-                    data = request.get_json()
-                except BadRequest:
-                    return jsonify(description="Not a JSON"), 400
-
-                data = request.get_json()
-                for k, v in data.items():
-                    if k not in storage.all(State).values():
-                        setattr(state, k, v)
-                storage.save()
-                return jsonify(state.to_dict()), 200
-        except:
+        state = storage.get(State, state_id)
+        if state is None:
             abort(404)
+        if request.method == "GET":
+            return jsonify(state.to_dict())
+
+        elif request.method == "DELETE":
+            storage.delete(state)
+            storage.save()
+            return ({}), 200
+
+        elif request.method == "PUT":
+            data = request.get_json()
+            if not data:
+                abort(400, description="Not a JSON")
+            for k, v in data.items():
+                if k not in ["id", "created_at", "updated_at"]:
+                    setattr(state, k, v)
+            storage.save()
+            return jsonify(state.to_dict()), 200
