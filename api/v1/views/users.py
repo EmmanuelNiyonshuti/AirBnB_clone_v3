@@ -4,9 +4,9 @@ This module provides RESTful API endpoints for managing `User` objects
 It includes routes to create, retrieve, update, and delete users
 """
 from api.v1.views import app_views
-from flask import request, abort, jsonify
-from models import storage
 from models.user import User
+from models import storage
+from flask import request, abort, jsonify
 from werkzeug.exceptions import BadRequest
 
 

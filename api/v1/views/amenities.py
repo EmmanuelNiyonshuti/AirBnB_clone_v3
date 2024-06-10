@@ -7,6 +7,7 @@ from api.v1.views import app_views
 from models.amenity import Amenity
 from models import storage
 from flask import jsonify, abort, request
+from werkzeug.exceptions import BadRequest
 
 
 @app_views.get("/amenities", strict_slashes=False)
@@ -28,7 +29,10 @@ def amenities():
         amenities_list = [amenity.to_dict() for amenity in amenities]
         return jsonify(amenities_list)
     elif request.method == "POST":
-        req_data = request.get_json()
+        try:
+            req_data = request.get_json()
+        except BadRequest:
+            abort(400, description="Not a JSON")
         if not req_data:
             abort(400, description="Not a JSON")
         if "name" not in req_data.keys():
@@ -67,9 +71,12 @@ def amenity_obj(amenity_id):
         storage.save()
         return ({}), 200
     elif request.method == "PUT":
-        req_data = request.get_json()
+        try:
+            req_data = request.get_json()
+        except BadRequest:
+            abort(400, description="Not a JSON")   
         if not req_data:
-            abort(400, "Not a JSON")
+            abort(400, description="Not a JSON")
         for k, v in req_data.items():
             if k not in ["id", "created_at", "updated_at"]:
                 setattr(amenity, k, v)
