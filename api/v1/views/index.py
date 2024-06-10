@@ -26,7 +26,7 @@ def status():
 def stats():
     """
     Retrieves The number of each object by type.
-    uses  count() method from storage
+    uses count() method from storage.
     """
     from models.amenity import Amenity
     from models.base_model import BaseModel
