@@ -48,7 +48,8 @@ def state_cities(state_id=None):
             storage.new(new_city)
             storage.save()
             return jsonify(new_city.to_dict()), 201
-
+    else:
+        abort(400)
 
 @app_views.get("/cities/<city_id>", strict_slashes=False)
 @app_views.put("/cities/<city_id>", strict_slashes=False)
@@ -87,3 +88,5 @@ def cities(city_id=None):
                     setattr(city, name, value)
             storage.save()
             return jsonify(city.to_dict()), 200
+    else:
+        abort(400)
