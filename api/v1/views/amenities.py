@@ -82,4 +82,4 @@ def amenity_obj(amenity_id):
             storage.save()
             return (amenity.to_dict()), 200
         except BadRequest:
-            abort(400, description="Not a JSON") 
+            abort(400, description="Not a JSON")
