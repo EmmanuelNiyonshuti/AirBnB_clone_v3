@@ -30,28 +30,26 @@ def state_cities(state_id):
         Response: JSON response with cities data or success/error message.
     """
     state = storage.get(State, state_id)
+    if state is None:
+        abort(404)
     if request.method == "GET":
-        if state is None:
-            abort(404)
         cities = storage.all(City).values()
         st_ctz = [c.to_dict() for c in cities if c.state_id == state_id]
         return jsonify(st_ctz)
     elif request.method == "POST":
-        if state is None:
-            abort(404)
-        req_data = request.get_json()
-        if not req_data:
+        try:
+            req_data = request.get_json()
+            if not req_data:
+                abort(400, description="Not a JSON")
+            if "name" not in req_data:
+                abort(400, description="Missing name")
+            new_city = City(**req_data)
+            new_city.state_id = state_id
+            storage.new(new_city)
+            storage.save()
+            return jsonify(new_city.to_dict()), 201
+        except BadRequest:
             abort(400, description="Not a JSON")
-        keys = []
-        for k in req_data.keys():
-            keys.append(k)
-        if "name" not in keys:
-            abort(400, description="Missing name")
-        new_city = City(**req_data)
-        new_city.state_id = state_id
-        storage.new(new_city)
-        storage.save()
-        return jsonify(new_city.to_dict()), 201
 
 
 @app_views.get("/cities/<city_id>", strict_slashes=False)
@@ -73,24 +71,23 @@ def cities(city_id):
         Response: JSON response with cities data or success/error message.
     """
     city = storage.get(City, city_id)
+    if city is None:
+        abort(404)
     if request.method == "GET":
-        if city is None:
-            abort(404)
         return jsonify(city.to_dict())
     elif request.method == "DELETE":
-        if city is None:
-            abort(404)
         storage.delete(city)
         storage.save()
         return ({}), 200
     elif request.method == "PUT":
-        if city is None:
-            abort(404)
-        req_data = request.get_json()
-        if not req_data:
+        try:
+            req_data = request.get_json()
+            if not req_data:
+                abort(400, description="Not a JSON")
+            for name, value in req_data.items():
+                if name not in ["id", "state_id", "created_at", "updated_at"]:
+                    setattr(city, name, value)
+            storage.save()
+            return jsonify(city.to_dict()), 200
+        except BadRequest:
             abort(400, description="Not a JSON")
-        for name, value in req_data.items():
-            if name not in ["id", "state_id", "created_at", "updated_at"]:
-                setattr(city, name, value)
-        storage.save()
-        return jsonify(city.to_dict()), 200

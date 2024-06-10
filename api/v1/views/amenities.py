@@ -3,11 +3,11 @@
 This module provides RESTful API endpoints for managing `Amenity` objects
  It includes routes to create, retrieve, update, and delete amenities
 """
+from flask import jsonify, abort, request
+from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 from models.amenity import Amenity
 from models import storage
-from flask import jsonify, abort, request
-from werkzeug.exceptions import BadRequest
 
 
 @app_views.get("/amenities", strict_slashes=False)
@@ -29,15 +29,18 @@ def amenities():
         amenities_list = [amenity.to_dict() for amenity in amenities]
         return jsonify(amenities_list)
     elif request.method == "POST":
-        req_data = request.get_json()
-        if not req_data:
+        try:
+            req_data = request.get_json()
+            if not req_data:
+                abort(400, description="Not a JSON")
+            if "name" not in req_data:
+                abort(400, description="Missing name")
+            new_amenity = Amenity(**req_data)
+            storage.new(new_amenity)
+            storage.save()
+            return jsonify(new_amenity.to_dict()), 201
+        except BadRequest:
             abort(400, description="Not a JSON")
-        if "name" not in req_data.keys():
-            abort(400, description="Missing name")
-        new_amenity = Amenity(**req_data)
-        storage.new(new_amenity)
-        storage.save()
-        return jsonify(new_amenity.to_dict()), 201
 
 
 @app_views.get("/amenities/<amenity_id>", strict_slashes=False)
@@ -68,11 +71,15 @@ def amenity_obj(amenity_id):
         storage.save()
         return ({}), 200
     elif request.method == "PUT":
-        req_data = request.get_json()   
-        if not req_data:
-            abort(400, description="Not a JSON")
-        for k, v in req_data.items():
-            if k not in ["id", "created_at", "updated_at"]:
-                setattr(amenity, k, v)
-        storage.save()
-        return (amenity.to_dict()), 200
+        try:
+            req_data = request.get_json()
+            if not req_data:
+                abort(400, description="Not a JSON")
+            ignore_keys = ["id", "created_at", "updated_at"]
+            for k, v in req_data.items():
+                if k not in ignore_keys:
+                    setattr(amenity, k, v)
+            storage.save()
+            return (amenity.to_dict()), 200
+        except BadRequest:
+            abort(400, description="Not a JSON") 
