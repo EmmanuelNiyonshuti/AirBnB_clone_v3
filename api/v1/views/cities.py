@@ -13,7 +13,8 @@ from flask import jsonify, abort, request
 from werkzeug.exceptions import BadRequest
 
 
-@app_views.route("/states/<state_id>/cities", methods=["GET", "POST"], strict_slashes=False)
+@app_views.get("/states/<state_id>/cities", strict_slashes=False)
+@app_views.post("/states/<state_id>/cities", strict_slashes=False)
 def state_cities(state_id=None):
     """
     Endpoint to manage cities related to a specific state.
@@ -37,19 +38,20 @@ def state_cities(state_id=None):
             st_ctz = [c.to_dict() for c in cities if c.state_id == state_id]
             return jsonify(st_ctz)
         elif request.method == "POST":
-            try:
-                req_data = request.get_json()
-                if "name" not in req_data.keys():
-                    abort(400, description="Missing Name")
-                new_city = City(**req_data)
-                new_city.state_id = state_id
-                storage.new(new_city)
-                storage.save()
-                return jsonify(new_city.to_dict()), 201
-            except:
+            req_data = request.get_json()
+            if not req_data:
                 abort(400, description="Not a JSON")
+            if "name" not in req_data.keys():
+                abort(400, description="Missing Name")
+            new_city = City(**req_data)
+            new_city.state_id = state_id
+            storage.new(new_city)
+            storage.save()
+            return jsonify(new_city.to_dict()), 201
 
-@app_views.route("/cities/<city_id>", methods=["GET", "PUT", "DELETE"], strict_slashes=False)
+@app_views.get("/cities/<city_id>", strict_slashes=False)
+@app_views.put("/cities/<city_id>", strict_slashes=False)
+@app_views.delete("/cities/<city_id>", strict_slashes=False)
 def cities(city_id=None):
     """
     Endpoint to manage individual city objects.
@@ -80,13 +82,12 @@ def cities(city_id=None):
             storage.save()
             return jsonify({}), 200
         elif request.method == "PUT":
-            try:
-                req_data = request.get_json()
-                for name, value in req_data.items():
-                    if name not in ["id", "state_id", "created_at", "updated_at"]:
-                        setattr(city, name, value)
-                storage.save()
-                return jsonify(city.to_dict()), 200
-            except:
-                return jsonify(description="Not a JSON"), 400
+            req_data = request.get_json()
+            if not req_data:
+                abort(400, description="Not a JSON")
+            for name, value in req_data.items():
+                if name not in ["id", "state_id", "created_at", "updated_at"]:
+                    setattr(city, name, value)
+            storage.save()
+            return jsonify(city.to_dict()), 200
 
