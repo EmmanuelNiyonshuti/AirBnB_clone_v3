@@ -15,7 +15,7 @@ import os
 
 """Create an instance of the Flask class for the web application"""
 app = Flask(__name__)
-CORS(app, origins="0.0.0.0")
+CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 """
 Register the blueprint with the Flask app instance
 This blueprint contains the route definitions for the API endpoints
