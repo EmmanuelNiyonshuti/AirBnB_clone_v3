@@ -116,24 +116,30 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get_obj_found(self):
         """test getting the obj by it's class and id
         when the obj is present"""
-        first_state_id = list(storage.all(User).values())[0].id
-        obj = storage.get(User, first_state_id)
+        if not storage.all(State).values():
+            new_state = State("")
+        first_state_id = list(storage.all(State).values())[0].id
+        obj = storage.get(State, first_state_id)
         self.assertIsNotNone(obj)
         self.assertEqual(obj.id, first_state_id)
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get_obj_notfound(self):
         """test getting the obj by it's class and id
         when the obj is not present"""
         obj = storage.get(User, "1234")
         self.assertEqual(obj, None)
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count_allobjs(self):
         """Test count method  when no cls passed"""
         self.assertEqual(storage.count(), len(storage.all().values()))
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count_obj(self):
         """Test count when cls is passed"""
         objs = len(storage.all(State).values())

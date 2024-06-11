@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """
-This module defines routes related to the status of the API.
+This module defines routes related to the
+status of the RESTful API.
 """
 
 from api.v1.views import app_views
 from flask import jsonify
-from models import storage
 
 
 @app_views.route("/status")
@@ -28,6 +28,7 @@ def stats():
     Retrieves The number of each object by type.
     uses count() method from storage.
     """
+    from models import storage
     from models.amenity import Amenity
     from models.base_model import BaseModel
     from models.city import City
