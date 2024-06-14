@@ -1,6 +1,7 @@
 # AirBnB Clone - RESTful API
-![alt text](image.png)
+In this project, I developed a RESTful API that exposes all the objects stored via a JSON web interface. This API allows for the manipulation of objects through standard HTTP methods.
 
+![alt text](image.png)
 
 # AirBnB Clone - The Console
 The console is the first segment of the AirBnB project at Holberton School that will collectively cover fundamental concepts of higher level programming. The goal of AirBnB project is to eventually deploy our server a simple copy of the AirBnB Website(HBnB). A command interpreter is created in this segment to manage objects for the AirBnB(HBnB) website.
@@ -17,7 +18,7 @@ The console is the first segment of the AirBnB project at Holberton School that 
 * [Installation](#installation)
 * [File Descriptions](#file-descriptions)
 * [Usage](#usage)
-* [RESTfulAPI](#RESTful API)
+* [RESTfulAPI](#RESTfulAPI)
 * [Examples of use](#examples-of-use)
 * [Bugs](#bugs)
 * [Authors](#authors)
